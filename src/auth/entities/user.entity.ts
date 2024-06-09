@@ -17,7 +17,7 @@ export class User {
     @Column('boolean', { default: true})
     isActive: boolean;
 
-    @Column('text', { default:['patient'] })
+    @Column('text', { default:'patient' })
     roles: string;
 
 
