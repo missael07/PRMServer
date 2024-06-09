@@ -48,7 +48,7 @@ export class AuthService {
     const { password, email } = signInDto;
     const user = await this.userRepo.findOne({
       where: { email },
-      select: { email: true, password: false, id: true, roles: true },
+      select: { email: true, password: true, id: true, roles: true },
     });
 
     if (!user || !bcrypt.compareSync(password, user.password))
