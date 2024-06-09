@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Record } from "src/records/entities/record.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User {
@@ -19,6 +20,10 @@ export class User {
 
     @Column('text', { default:'patient' })
     roles: string;
+
+    @OneToOne(() => Record, (record) => record.user, { cascade: true })
+    @JoinColumn()
+    record: Record;
 
 
     @BeforeInsert()

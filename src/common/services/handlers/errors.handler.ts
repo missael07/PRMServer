@@ -1,5 +1,6 @@
 import {
     BadRequestException,
+    ConflictException,
     ForbiddenException,
     Injectable,
     InternalServerErrorException,
@@ -13,11 +14,10 @@ import {
     loggerFrom: string = '';
     logger = new Logger();
   
-    handleExceptions(error: any, code: string, message: string): never {
-      
-      if (error) this.logger.error(error);
+    handleExceptions(code: string, message: string): never {
       this.logger.error(message);
       switch (code) {
+        case '409':
         case '23505':
           throw new BadRequestException(message);
         case '404':
@@ -27,6 +27,7 @@ import {
         case '403':
           throw new ForbiddenException(message);
         default:
+          console.log('abc', code, message)
           throw new InternalServerErrorException(
             'Unexpected error - Check Server Logs',
           );

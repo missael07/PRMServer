@@ -37,7 +37,6 @@ export class AuthService {
       return { ...user, token: this._getJwt({ id: user.id, name: user.fullName, role: user.roles }) };
     } catch (error) {
       this.errorHandlerService.handleExceptions(
-        error,
         error.code,
         error.detail,
       );
@@ -53,7 +52,6 @@ export class AuthService {
 
     if (!user || !bcrypt.compareSync(password, user.password))
       this.errorHandlerService.handleExceptions(
-        null,
         '401',
         'Invalid Credentials',
       );
@@ -70,7 +68,6 @@ export class AuthService {
       }
     } catch (error) {
       this.errorHandlerService.handleExceptions(
-        error,
         error.code,
         error.detail,
       );
