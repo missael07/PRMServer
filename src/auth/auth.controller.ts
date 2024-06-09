@@ -30,7 +30,6 @@ export class AuthController {
   @Auth(ValidRoles.patient, ValidRoles.admin)
   @ApiBearerAuth()
   checkAuthStatus(@GetUser() user: User) {
-    console.log(user)
     return this.authService.checkAuthStatus(user);
   }
 }

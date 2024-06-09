@@ -16,10 +16,8 @@ export class UserRoleGuard implements CanActivate {
 
     const validRoles: string[] = this.reflector.get( META_ROLES, context.getHandler() );
 
-
-    // console.log('roles', validRoles)
-    // if ( !validRoles ) return true;
-    // if ( validRoles.length === 0 ) return true;
+    if ( !validRoles ) return true;
+    if ( validRoles.length === 0 ) return true;
 
     const request = context.switchToHttp().getRequest();
 
@@ -27,10 +25,7 @@ export class UserRoleGuard implements CanActivate {
 
     if ( !user ) this.errorHandlerService.handleExceptions(null, '404', 'User not found.');
 
-    console.log(user);
-
     if ( validRoles.includes(user.roles)) {
-      console.log(123)
       return true;
     }
     
