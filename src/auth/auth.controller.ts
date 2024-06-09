@@ -1,0 +1,36 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { SignInDto } from './dto/signIn.dto';
+import { GetUser } from './decorators/get-user.decorator';
+import { User } from './entities/user.entity';
+import { Auth } from './decorators/auth.decorator';
+import { RoleProtected } from './decorators/role-protected.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { ValidRoles } from './interfaces';
+import { UserRoleGuard } from './guards/user-role.guard';
+
+@ApiTags('Auth')
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('signUp')
+  signUp(@Body() createUserDto: CreateUserDto) {
+    return this.authService.sigUp(createUserDto);
+  }
+
+  @Post('signIn')
+  signIn(@Body() signinDto: SignInDto) {
+    return this.authService.signIn(signinDto);
+  }
+  
+  @Get('checkStatus')
+  @Auth(ValidRoles.patient, ValidRoles.admin)
+  @ApiBearerAuth()
+  checkAuthStatus(@GetUser() user: User) {
+    console.log(user)
+    return this.authService.checkAuthStatus(user);
+  }
+}
