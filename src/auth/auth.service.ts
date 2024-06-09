@@ -34,7 +34,7 @@ export class AuthService {
 
       delete user.password;
 
-      return { ...user, token: this._getJwt({ id: user.id, name: user.fullName }) };
+      return { ...user, token: this._getJwt({ id: user.id, name: user.fullName, role: user.roles }) };
     } catch (error) {
       this.errorHandlerService.handleExceptions(
         error,
@@ -48,7 +48,7 @@ export class AuthService {
     const { password, email } = signInDto;
     const user = await this.userRepo.findOne({
       where: { email },
-      select: { email: true, password: true, id: true },
+      select: { email: true, password: false, id: true, roles: true },
     });
 
     if (!user || !bcrypt.compareSync(password, user.password))
@@ -58,14 +58,15 @@ export class AuthService {
         'Invalid Credentials',
       );
 
-    return { ...user, token: this._getJwt({ id: user.id, name: user.fullName  }) };
+    delete user.password;
+    return { ...user, token: this._getJwt({ id: user.id, name: user.fullName, role: user.roles  }) };
   }
 
   async checkAuthStatus(user: User) {
     try {
       return {
         ...user,
-        token: this._getJwt({id: user.id, name: user.fullName})
+        token: this._getJwt({ id: user.id, name: user.fullName , role: user.roles })
       }
     } catch (error) {
       this.errorHandlerService.handleExceptions(
