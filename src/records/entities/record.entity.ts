@@ -1,5 +1,6 @@
 import { User } from "src/auth/entities/user.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { NutritionalDiet } from "src/nutritional-diet/entities/nutritional-diet.entity";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('records')
 export class Record {
@@ -14,4 +15,7 @@ export class Record {
 
     @OneToOne(() => User, (user) => user.record)
     user: User;
+
+    @OneToMany(() => NutritionalDiet, nutritionalDiet => nutritionalDiet.record)
+    nutritionalDiets: NutritionalDiet[];
 }

@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { RecordsModule } from './records/records.module';
+import { NutritionalDietModule } from './nutritional-diet/nutritional-diet.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot({
@@ -16,7 +17,7 @@ import { RecordsModule } from './records/records.module';
     autoLoadEntities: true,
     synchronize: true,
 
-  }), AuthModule, CommonModule, RecordsModule],
+  }), AuthModule, CommonModule, RecordsModule, NutritionalDietModule],
   controllers: [],
   providers: [],
 })

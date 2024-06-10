@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { UpdateRecordDto } from './dto/update-record.dto';
 import { Record } from './entities/record.entity';
@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/entities/user.entity';
 import { ErrorHandlerService } from 'src/common/services/handlers/errors.handler';
-import { UpdateCommonDto } from '../common/dto/update-common.dto';
 
 @Injectable()
 export class RecordsService {
@@ -21,26 +20,26 @@ export class RecordsService {
   ) {}
 
   async create(createRecordDto: CreateRecordDto) {
-    const { userId, startWeigth } = createRecordDto;
-    const existingProfile = await this.recordRepository.findOne({ where: { user: { id: userId } } });
-    if (existingProfile) {
-      console.log(123)
-      this.errorHandlerService.handleExceptions(
-        '409',
-        'User already has a record',
-      );
-      
-    }
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      this.errorHandlerService.handleExceptions(
-        '404',
-        'User not found',
-      );
-      
-    }
+   
     try {
+      const { userId, startWeigth } = createRecordDto;
+      const existingProfile = await this.recordRepository.findOne({ where: { user: { id: userId } } });
+      if (existingProfile) {
+        console.log(123)
+        this.errorHandlerService.handleExceptions(
+          '409',
+          'User already has a record',
+        );
         
+      }
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        this.errorHandlerService.handleExceptions(
+          '404',
+          'User not found',
+        );
+        
+      }
       const record = await this.recordRepository.create({
         startWeigth,
         user,
@@ -49,7 +48,7 @@ export class RecordsService {
 
       await this.recordRepository.save(record);
 
-      return this.recordRepository.save(record);
+      return record;
     } catch (error) {
       this.errorHandlerService.handleExceptions(
         error.status,
