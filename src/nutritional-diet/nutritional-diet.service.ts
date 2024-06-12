@@ -27,7 +27,7 @@ export class NutritionalDietService {
     recordId: string, file: Express.Multer.File,
     createDietDto: CreateNutritionalDietDto,
   ): Promise<NutritionalDiet> {
-    const secureName = (await this.uploadFile(file));
+    const secureName = file ? (await this.uploadFile(file)) : '';
     try {
       const record = await this.recordRepository.findOne({
         where: { id: recordId },

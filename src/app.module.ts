@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { RecordsModule } from './records/records.module';
 import { NutritionalDietModule } from './nutritional-diet/nutritional-diet.module';
+import { PatientsModule } from './patients/patients.module';
 
 @Module({
   imports: [ConfigModule.forRoot(), TypeOrmModule.forRoot({
@@ -17,7 +18,7 @@ import { NutritionalDietModule } from './nutritional-diet/nutritional-diet.modul
     autoLoadEntities: true,
     synchronize: true,
 
-  }), AuthModule, CommonModule, RecordsModule, NutritionalDietModule],
+  }), AuthModule, CommonModule, RecordsModule, NutritionalDietModule, PatientsModule],
   controllers: [],
   providers: [],
 })
