@@ -27,7 +27,6 @@ import {
         case '403':
           throw new ForbiddenException(message);
         default:
-          console.log('abc', code, message)
           throw new InternalServerErrorException(
             'Unexpected error - Check Server Logs',
           );

@@ -16,6 +16,9 @@ export class NutritionalDiet {
   @Column('text')
   secureName: string;
 
+  @Column('text')
+  publicId: string;
+
   @Column('date')
   from: Date;
 

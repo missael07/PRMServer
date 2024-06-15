@@ -14,7 +14,6 @@ export class PatientsController {
 
   @Get()
   findAll(@Query('term') term: string) {
-    console.log(term);
     return this.patientsService.findAll(term);
   }
 

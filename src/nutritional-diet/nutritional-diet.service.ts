@@ -7,6 +7,28 @@ import { Repository } from 'typeorm';
 import { Record } from 'src/records/entities/record.entity';
 import { ErrorHandlerService } from '../common/services/handlers/errors.handler';
 import { UploadApiResponse,UploadApiErrorResponse, v2 as cloudinary } from 'cloudinary';
+
+interface FileResponse {
+  asset_id:             string;
+  public_id:            string;
+  format:               string;
+  version:              number;
+  resource_type:        string;
+  type:                 string;
+  created_at:           Date;
+  bytes:                number;
+  width:                number;
+  height:               number;
+  folder:               string;
+  access_mode:          string;
+  url:                  string;
+  secure_url:           string;
+  next_cursor:          string;
+  derived:              any[];
+  rate_limit_allowed:   number;
+  rate_limit_reset_at:  Date;
+  rate_limit_remaining: number;
+}
 @Injectable()
 export class NutritionalDietService {
   constructor(
@@ -25,15 +47,15 @@ export class NutritionalDietService {
 
   async createNutritionalDiet(
     recordId: string, file: Express.Multer.File,
-    createDietDto: CreateNutritionalDietDto,
   ): Promise<NutritionalDiet> {
-    const secureName = file ? (await this.uploadFile(file)) : '';
+    const newFile = <FileResponse>(await this.uploadFile(file));
+    
     try {
       const record = await this.recordRepository.findOne({
         where: { id: recordId },
       });
       if (!record) {
-        this.deleteFile(secureName);
+        this.deleteFile(newFile.public_id);
         this.errorHandlerService.handleExceptions('404', 'Record not found');
       }
 
@@ -43,7 +65,8 @@ export class NutritionalDietService {
       
       const nutritionalDiet = await this.nutritionalDietRepository.create({
         record,
-        secureName,
+        publicId: newFile.public_id,
+        secureName: newFile.secure_url,
         from,
         to,
       });
@@ -51,8 +74,9 @@ export class NutritionalDietService {
       await this.nutritionalDietRepository.save(nutritionalDiet);
 
       return nutritionalDiet;
+      return
     } catch (error) {
-      this.deleteFile(secureName);
+      this.deleteFile(newFile.public_id);
       this.errorHandlerService.handleExceptions(error.status, error.message);
     }
   }
@@ -70,7 +94,7 @@ export class NutritionalDietService {
     return this.nutritionalDietRepository.find({ relations: ['record'] });
   }
 
-  async uploadFile(file: Express.Multer.File): Promise<string> {
+  async uploadFile(file: Express.Multer.File) {
     return new Promise((resolve, reject) => {
       cloudinary.uploader.upload_stream(
         { resource_type: 'auto' },
@@ -78,17 +102,17 @@ export class NutritionalDietService {
           if (error) {
             return reject(error);
           }
-          resolve(result.public_id);
+          resolve(result);
         },
       ).end(file.buffer);
     });
   }
 
-  async getFileUrl(publicId: string): Promise<string> {
+  async getFileUrl(publicId: string) {
     return cloudinary.api.resource(publicId);
   }
 
-  async deleteFile(publicId: string) {
+  async deleteFile( publicId: string) {
     try {
       const result = await cloudinary.uploader.destroy(publicId);
       
@@ -98,6 +122,22 @@ export class NutritionalDietService {
       return result.result === 'ok';
     } catch (error) {
       console.error('Error al eliminar la imagen de Cloudinary:', error);
+      this.errorHandlerService.handleExceptions(error.status, error.message);
+      return false;
+    }
+  }
+
+  async deleteDiet(id: string, publicId: string) {
+    try {
+
+      const result = await this.nutritionalDietRepository.delete(id)
+      if (result.raw ) {
+
+        this.deleteFile(publicId);
+      }
+      return 'ok';
+    } catch (error) {
+      console.error('Error al eliminar la Dieta:', error);
       this.errorHandlerService.handleExceptions(error.status, error.message);
       return false;
     }
